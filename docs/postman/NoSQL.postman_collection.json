@@ -1,0 +1,189 @@
+{
+	"info": {
+		"_postman_id": "3c9fa18a-a741-4913-a514-5cc3cdb74334",
+		"name": "NoSQL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Requerimientos Obligatorios",
+			"item": [
+				{
+					"name": "api_user_create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo\": \"example@gmail.com\",\r\n    \"contrasenia\": \"chau\",\r\n    \"nombre\": \"Pedro\",\r\n    \"apellido\": \"Picapiedra\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/users",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api_iniciar_sesion",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo\": \"martin@gmail.com\",\r\n    \"contrasenia\": \"holam\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/login",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api_error_codes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/error_codes",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"error_codes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Otros",
+			"item": [
+				{
+					"name": "api_user_list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/users",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api_user_find",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/users/{{correo}}",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"{{correo}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api_user_delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/users/{{correo}}",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"{{correo}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api_db_populate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/db_populate",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"db_populate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "NoSQL_API_BASE_URL",
+			"value": "http://localhost:5000/api",
+			"type": "default"
+		},
+		{
+			"key": "correo",
+			"value": "joaquin@gmail.com"
+		}
+	]
+}
