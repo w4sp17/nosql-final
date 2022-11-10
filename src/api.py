@@ -3,9 +3,9 @@ from flask_mongoengine import MongoEngine
 
 # ========================================[ Config ]========================================
 
-app = Flask(__name__)
-
 DB_URI = "mongodb+srv://w4sp_17:1234ABCD@cluster0.0uaoxe7.mongodb.net/?retryWrites=true&w=majority"
+
+app = Flask(__name__)
 app.config["MONGODB_HOST"] = DB_URI
 db = MongoEngine()
 db.init_app(app)
@@ -58,30 +58,6 @@ def contraseniasCoinciden(usuarioContrasenia, contraseniaIngresada):
 @app.get('/api/error_codes')
 def api_error_codes():   
     return make_response(jsonify({"error_codes": error_codes}), 201)
-
-@app.post('/api/db_populate')
-def api_db_populate():
-    algunoCreado = False
-
-    user_document = Usuario.objects(correo="martin@gmail.com").first()
-    if not user_document:
-        user = Usuario(correo="martin@gmail.com", contrasenia="holam", nombre="Martín", apellido="Boiwko")
-        user.save()
-        algunoCreado = True
-    
-    user_document = Usuario.objects(correo="nestor@gmail.com").first()
-    if not user_document:
-        user = Usuario(correo="nestor@gmail.com", contrasenia="holan", nombre="Néstor", apellido="Pérez")
-        user.save()
-        algunoCreado = True
-
-    user_document = Usuario.objects(correo="joaquin@gmail.com").first()
-    if not user_document:
-        user = Usuario(correo="joaquin@gmail.com", contrasenia="holaj", nombre="Joaquin", apellido="Bandini")
-        user.save()
-        algunoCreado = True
-    
-    return make_response(buildMsg("Los datos por defecto fueron cargados."), 201 if algunoCreado else 200)
 
 @app.post('/api/users')
 def api_user_create():
@@ -171,6 +147,30 @@ def api_iniciar_sesion():
 
 # ========================================[ Otros Endpoints ]========================================
 
+@app.post('/api/db_populate')
+def api_db_populate():
+    algunoCreado = False
+
+    user_document = Usuario.objects(correo="martin@gmail.com").first()
+    if not user_document:
+        user = Usuario(correo="martin@gmail.com", contrasenia="holam", nombre="Martín", apellido="Boiwko")
+        user.save()
+        algunoCreado = True
+    
+    user_document = Usuario.objects(correo="nestor@gmail.com").first()
+    if not user_document:
+        user = Usuario(correo="nestor@gmail.com", contrasenia="holan", nombre="Néstor", apellido="Pérez")
+        user.save()
+        algunoCreado = True
+
+    user_document = Usuario.objects(correo="joaquin@gmail.com").first()
+    if not user_document:
+        user = Usuario(correo="joaquin@gmail.com", contrasenia="holaj", nombre="Joaquin", apellido="Bandini")
+        user.save()
+        algunoCreado = True
+    
+    return make_response(buildMsg("Los datos por defecto fueron cargados."), 201 if algunoCreado else 200)
+
 @app.get('/api/users')
 def api_user_list():
     users = []
@@ -195,7 +195,20 @@ def api_user_delete(correo):
     else:
         return make_response(buildErrorMsg(code="102"), 200)
 
+@app.get('/')
+def api_home():
+    return '''<h1>NOSQL API REST ENDPOINTS</h1>
+        <p><b>Ver códigos de errores                    </b><br> (GET)     /api/error_codes</p>
+        <p><b>Agregar nuevo usuario                     </b><br> (POST)    /api/users</p>
+        <p><b>Modificar usuario - Agregar Rol           </b><br> (PUT)     /api/users/<correo>?eliminar=no</p>
+        <p><b>Modificar usuario - Eliminar Rol          </b><br> (PUT)     /api/users/<correo>?eliminar=si</p>
+        <p><b>Iniciar Sesion                            </b><br> (POST)    /api/login</p>
+        <p><b>Cargar datos de usuarios predeterminados  </b><br> (POST)    /api/db_populate</p>
+        <p><b>Mostrar datos de todos los usuarios       </b><br> (GET)     /api/users</p>
+        <p><b>Mostrar datos de un usuario               </b><br> (GET)     /api/users/<correo></p>
+        <p><b>Eliminar un usuario                       </b><br> (DELETE)  /api/users/<correo></p>'''
+
 # ========================================[ Main ]========================================
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
