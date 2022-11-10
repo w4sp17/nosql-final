@@ -76,6 +76,72 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "api_user_update agregar rol",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contrasenia\": \"holaj\",\r\n    \"roles\": \"Rol1,Rol2,Rol3,Rol4,Rol5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/users/{{correo}}?eliminar=no",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"{{correo}}"
+							],
+							"query": [
+								{
+									"key": "eliminar",
+									"value": "no"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api_user_update eliminar rol",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contrasenia\": \"holaj\",\r\n    \"roles\": \"Rol1,Rol2,Rol4\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NoSQL_API_BASE_URL}}/users/{{correo}}?eliminar=si",
+							"host": [
+								"{{NoSQL_API_BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"{{correo}}"
+							],
+							"query": [
+								{
+									"key": "eliminar",
+									"value": "si"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

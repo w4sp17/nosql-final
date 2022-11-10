@@ -32,7 +32,7 @@ class Usuario(db.Document):
 error_codes = {
     "101" : "El usuario ya existe.",
     "102" : "El usuario no existe.",
-    "103" : "El rol ingresado es incorrecto.",
+    "103" : "No se puede eliminar un rol que el usuario no tiene. Toda la operación fue cancelada, no se efectuaron cambios.",
     "104" : "Combinación incorrecta de correo y contraseña.",
 }
 
@@ -41,8 +41,17 @@ error_codes = {
 def buildMsg(msg):
     return jsonify({"msg": msg})
 
-def buildErrorMsg(code):
-    return jsonify({"error_msg": error_codes[code]})
+def buildErrorMsg(code, **extra):
+    if extra:
+        return jsonify({"error_msg": error_codes[code], "extra": extra})
+    else:
+        return jsonify({"error_msg": error_codes[code]})
+
+def contraseniasCoinciden(usuarioContrasenia, contraseniaIngresada):
+    if usuarioContrasenia == contraseniaIngresada:
+        return True
+    else:
+        return False
 
 # ========================================[ Requerimientos Obligatorios ]========================================
 
@@ -81,7 +90,7 @@ def api_user_create():
     
     user_document = Usuario.objects(correo=correo).first()
     if user_document:
-       return make_response(buildErrorMsg("101"), 200)
+       return make_response(buildErrorMsg(code="101"), 200)
 
     contrasenia = body["contrasenia"]
     nombre = body["nombre"]
@@ -92,29 +101,73 @@ def api_user_create():
 
     return make_response(buildMsg("Usuario creado!"), 201)
 
+@app.put('/api/users/<correo>')
+def api_user_update(correo):
+    body = request.json
+    queryParms = request.args
+    roles = body["roles"].split(",")
+
+    user_document = Usuario.objects(correo=correo).first()
+    if user_document:
+        if not contraseniasCoinciden(user_document.contrasenia, body["contrasenia"]):
+            return make_response(buildErrorMsg(code="104"), 403)
+        
+        eliminarRoles = []
+        user_document_roles = user_document.roles
+
+        if queryParms["eliminar"] == "si":
+            for rol in roles:
+                existe = False
+                for user_document_rol in user_document.roles:
+                    if user_document_rol == rol:
+                        existe = True
+                        eliminarRoles.append(rol)
+                
+                if not existe:
+                    return make_response(buildErrorMsg(code="103", extra="Nombre del rol inexistente: " + rol), 200)
+
+            if len(eliminarRoles) == 0:
+                mensaje = 'El usuario no tenia ninguno de esos roles!'
+            else:
+                for eliminarRol in eliminarRoles:
+                    user_document_roles.remove(eliminarRol)
+                user_document.update(roles=user_document_roles)
+                mensaje = f"Usuario modificado! Roles eliminados: " + ','.join(eliminarRoles)
+
+        else:
+            nuevoRoles = []
+            for rol in roles:
+                existe = False
+
+                for user_document_rol in user_document.roles:
+                    if user_document_rol == rol:
+                        existe = True
+                
+                if not existe:
+                    nuevoRoles.append(rol)
+
+            if len(nuevoRoles) == 0:
+                mensaje = 'El usuario ya tenia todos esos roles!'
+            else:
+                user_document_roles = user_document_roles + nuevoRoles
+                user_document.update(roles=user_document_roles)
+                mensaje = f"Usuario modificado! Roles agregados: " + ','.join(nuevoRoles)
+            
+        return make_response(buildMsg(mensaje), 200)
+    else:
+        return make_response(buildErrorMsg(code="102"), 200)
+
 @app.post('/api/login')
 def api_iniciar_sesion():
     body = request.json
-
     user_ok = False
-    user_document = Usuario.objects(correo=body["correo"]).first()
 
+    user_document = Usuario.objects(correo=body["correo"]).first()
     if user_document:
-        if user_document.contrasenia == body["contrasenia"]:
+        if contraseniasCoinciden(user_document.contrasenia, body["contrasenia"]):
             user_ok = True
 
     return make_response(jsonify({"conectado": user_ok}), 200 if user_ok else 403)
-
-# @app.put('/api/users/<correo>/roles')
-# def update_user(correo):
-    # user_document = Usuario.objects(correo=correo).first()
-    # if user_document:
-    #     roles = user_document.roles
-    #     roles.append("testRol1")
-    #     user_document.update(roles=roles)
-    #     return make_response(buildMsg("Usuario modificado!"), 200)
-    # else:
-    #     return make_response(buildErrorMsg("102"), 200)
 
 # ========================================[ Otros Endpoints ]========================================
 
@@ -131,7 +184,7 @@ def api_user_find(correo):
     if user_document:
         return make_response(jsonify(user_document.to_json()), 200)
     else:
-        return make_response(buildErrorMsg("102"), 200)
+        return make_response(buildErrorMsg(code="102"), 200)
 
 @app.delete('/api/users/<correo>')
 def api_user_delete(correo):
@@ -140,7 +193,7 @@ def api_user_delete(correo):
         user_document.delete()
         return make_response("", 204)
     else:
-        return make_response(buildErrorMsg("102"), 200)
+        return make_response(buildErrorMsg(code="102"), 200)
 
 # ========================================[ Main ]========================================
 
