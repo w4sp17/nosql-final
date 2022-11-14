@@ -66,7 +66,7 @@ def api_user_create():
     
     user_document = Usuario.objects(correo=correo).first()
     if user_document:
-       return make_response(buildErrorMsg(code="101"), 200)
+       return make_response(buildErrorMsg(code="101"), 101)
 
     contrasenia = body["contrasenia"]
     nombre = body["nombre"]
@@ -86,7 +86,7 @@ def api_user_update(correo):
     user_document = Usuario.objects(correo=correo).first()
     if user_document:
         if not contraseniasCoinciden(user_document.contrasenia, body["contrasenia"]):
-            return make_response(buildErrorMsg(code="104"), 403)
+            return make_response(buildErrorMsg(code="104"), 104)
         
         eliminarRoles = []
         user_document_roles = user_document.roles
@@ -100,7 +100,7 @@ def api_user_update(correo):
                         eliminarRoles.append(rol)
                 
                 if not existe:
-                    return make_response(buildErrorMsg(code="103", extra="Nombre del rol inexistente: " + rol), 200)
+                    return make_response(buildErrorMsg(code="103", extra="Nombre del rol inexistente: " + rol), 103)
 
             if len(eliminarRoles) == 0:
                 mensaje = 'El usuario no tenia ninguno de esos roles!'
@@ -131,7 +131,7 @@ def api_user_update(correo):
             
         return make_response(buildMsg(mensaje), 200)
     else:
-        return make_response(buildErrorMsg(code="102"), 200)
+        return make_response(buildErrorMsg(code="102"), 102)
 
 @app.post('/api/login')
 def api_iniciar_sesion():
@@ -184,7 +184,7 @@ def api_user_find(correo):
     if user_document:
         return make_response(jsonify(user_document.to_json()), 200)
     else:
-        return make_response(buildErrorMsg(code="102"), 200)
+        return make_response(buildErrorMsg(code="102"), 102)
 
 @app.delete('/api/users/<correo>')
 def api_user_delete(correo):
@@ -193,7 +193,7 @@ def api_user_delete(correo):
         user_document.delete()
         return make_response("", 204)
     else:
-        return make_response(buildErrorMsg(code="102"), 200)
+        return make_response(buildErrorMsg(code="102"), 102)
 
 @app.get('/')
 def api_home():
