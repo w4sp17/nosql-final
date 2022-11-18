@@ -30,5 +30,5 @@ Mejor aún, también tiene un servicio gratuito de hosting llamado MongoDB Atlas
 ## Opcionales
 - ✘ Utilización de Jenkins para automatización de pruebas.
 - ✓ Dockerizar la solución.
-- ✘ Realizar una prueba de carga contra los servicios rest y analizar su comportamiento.
+- ✓ Realizar una prueba de carga contra los servicios rest y analizar su comportamiento.
 teniendo en cuenta la base de datos (JMeter).
